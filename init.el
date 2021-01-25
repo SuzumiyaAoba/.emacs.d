@@ -81,6 +81,27 @@
     :config
     (set-face-attribute 'default nil :family "Cica" :height 140)))
 
+(leaf ui
+  :config
+  (leaf doom-modeline
+    :ensure t
+    :hook (after-init-hook . doom-modeline-mode)
+    :custom
+    (doom-modeline-buffer-file-name-style . 'truncate-with-project)
+    (doom-modeline-icon . t)
+    (doom-modeline-minor-modes . nil)
+    (doom-modeline-project-detection 'project)
+    :config
+    (line-number-mode 0)
+    (column-number-mode 0)))
+
+(leaf doom-themes
+  :ensure t
+  :custom ((doom-themes-treemacs-theme . "doom-colors")
+           (doom-themes-treemacs-enable-variable-pitch . nil))
+  :config
+  (doom-themes-treemacs-config))
+
 (leaf autorevert
   :tag "builtin"
   :custom ((auto-revert-internal . 0.1))
@@ -173,14 +194,11 @@
 
 (leaf anzu
   :ensure t
-  :bind
-  ([remap query-replace] . anzu-query-replace)
-  ([remap query-replace-regexp] . anzu-query-replace-regexp)
   :custom ((anzu-replace-threshold . 1000)
            (anzu-search-threshold . 1000))
-  :global-minor-mode anzu-mode
   :config
-  (copy-face 'mode-line 'anzu-mode-line))
+  (copy-face 'mode-line 'anzu-mode-line)
+  (global-anzu-mode +1))
 
 (leaf ivy
   :diminish ""
@@ -242,8 +260,7 @@
 
 (leaf swiper
     :ensure t
-    :bind (("C-s" . swiper)
-           ("M-i" . swiper-all)
+    :bind (("M-i" . swiper-all)
            ("C-c @" . swiper-thing-at-point)))
 
 (leaf all-the-icons
@@ -283,9 +300,44 @@
     :ensure t
     :global-minor-mode counsel-projectile-mode))
 
+(leaf flymake
+  :ensure t)
+
 (leaf markdown-mode
   :ensure t
   :mode (("\\.md\\'" . markdown-mode)))
+
+(leaf yaml-mode
+  :ensure t)
+
+(leaf typescript-mode
+  :ensure t
+  :mode (("\\.ts\\'" . typescript-mode)
+         ("\\.tsx\\' . typescript-mode"))
+  :custom ((lsp-enable-clients '(ts-ls))))
+
+(leaf prettier-js
+  :ensure t)
+
+(leaf java
+  :config
+  (leaf lsp-java
+    :ensure t
+    :hook ((java-mode-hook . lsp))))
+
+(leaf lsp
+  :config
+  (leaf lsp-mode
+    :ensure t
+    :custom ((lsp-document-sync-method lsp--sync-incremental)))
+
+  (leaf lsp-ui
+    :ensure t))
+
+(leaf dap-mode
+  :after lsp-mode
+  :config
+  (dap-auto-configure-mode))
 
 (defun open-init-el ()
   "Toggle current buffer between init.el."
